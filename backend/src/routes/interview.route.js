@@ -1,6 +1,6 @@
 import express from 'express';
 import { authUser } from '../middleware/auth.middleware.js';
-import { generateInterviewResponse, getInterviewReortById, getAllReport } from '../contorllers/interview.contorller.js';
+import { generateInterviewResponse, getInterviewReortById, getAllReport } from '../controllers/interview.contorller.js';
 import upload from '../middleware/file.middleware.js';
 
 const interviewRouter = express.Router();

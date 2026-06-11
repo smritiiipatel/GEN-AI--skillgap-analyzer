@@ -1,5 +1,5 @@
-import './src/congif/env.js'
-import connectDB from './src/congif/database.js';
+import './src/config/env.js'
+import connectDB from './src/config/database.js';
 import app from "./src/app.js";
 
 

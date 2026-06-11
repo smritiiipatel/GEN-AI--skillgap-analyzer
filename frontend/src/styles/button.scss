@@ -1,18 +1,39 @@
-.button{
-border: none;
-outline: none;
-padding-inline: 1.5rem;
-padding-block: 0.75rem;
-border-radius: 1rem;
+.button {
+    border: none;
+    outline: none;
+    padding-inline: 1.5rem;
+    padding-block: 0.75rem;
+    border-radius: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
 
-  transition: all 0.3s ease-in-out;
+    &.primary-button {
+        background-color: rgb(211, 40, 69);
+        color: white;
 
-  &.primary-button{
-    background-color: rgb(211, 40, 69);
-    color: white;
-  }
+        &:hover {
+            background-color: rgb(180, 30, 55);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(211, 40, 69, 0.4);
+        }
 
-  &.active{
-    transform: scale(1.1);
-  }
+        &:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+    }
+
+    &.active {
+        transform: scale(1.05);
+    }
+
+    // ── Mobile ────────────────────
+    @media (max-width: 480px) {
+        padding-inline: 1.25rem;
+        padding-block: 0.65rem;
+        font-size: 0.9rem;
+        border-radius: 0.75rem;
+    }
 }
