@@ -6,8 +6,11 @@ import cors from "cors";
 
 const app = express();
 app.use(cors({
-    origin:"http://localhost:5173",
-    credentials:true
+    origin: [
+        "http://localhost:5173",
+        "https://gen-ai-skillgap-analyzer-frontend.onrender.com"  // ← yeh add karo
+    ],
+    credentials: true
 }))
 app.use(express.json());
 app.use(cookieParser());
