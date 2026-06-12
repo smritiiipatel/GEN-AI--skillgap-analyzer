@@ -7,7 +7,13 @@ function extractTextFromPDF(buffer) {
         const parser = new pdf2json()
         parser.on("pdfParser_dataReady", (data) => {
             const text = data.Pages.map(page =>
-                page.Texts.map(t => decodeURIComponent(t.R[0].T)).join(" ")
+                page.Texts.map(t => {
+                    try {
+                        return decodeURIComponent(t.R[0].T)
+                    } catch(e) {
+                        return t.R[0].T
+                    }
+                }).join(" ")
             ).join("\n")
             resolve(text)
         })
