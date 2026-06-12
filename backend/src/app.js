@@ -1,3 +1,9 @@
+import express from 'express';
+import { authRouter } from './routes/auth.routes.js';
+import { interviewRouter } from './routes/interview.route.js';
+import cookieParser from 'cookie-parser';
+import cors from "cors";
+
 const app = express();
 
 const corsOptions = {
@@ -14,7 +20,6 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// ← yeh add karo
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "https://gen-ai-skillgap-analyzer-frontend.onrender.com");
     res.header("Access-Control-Allow-Credentials", "true");
@@ -28,5 +33,8 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 app.use(cookieParser());
+
+app.use("/api/auth", authRouter);
+app.use("/api/interview", interviewRouter);
 
 export default app;
