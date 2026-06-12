@@ -10,90 +10,78 @@ const cookieOptions = {
     maxAge: 24 * 60 * 60 * 1000
 }
 
-export async function registerUser(req,res) {
-    const {username, email, password} = req.body;
-    if(!username || !email || !password){
-        return res.status(400).json({
-            message: "please provide username , email and password"
-        })
-    }
-    const isUserAlreadyExist = await userModal.findOne({
-        $or:[{username},{email}]
-    })
-    if(isUserAlreadyExist){
-        return res.status(400).json({
-            message: "account already exists with this email"
-        })
-    }
-    const hash = await bcrypt.hash(password, 10);
-    const user = await userModal.create({
-        username, email, password: hash
-    })
-    const token = jwt.sign({
-        id: user._id,
-        username: user.username
-    }, process.env.JWT_SECRET_KEY, { expiresIn: "1d" })
-
-    res.cookie("token", token, cookieOptions)  // ← fixed
-    res.status(201).json({
-        message: "user registered successfully",
-        user: {
-            id: user._id,
-            username: user.username,
-            email: user.email
+export async function registerUser(req, res) {
+    try {
+        const { username, email, password } = req.body;
+        if (!username || !email || !password) {
+            return res.status(400).json({ message: "please provide username, email and password" })
         }
-    })
+        const isUserAlreadyExist = await userModal.findOne({ $or: [{ username }, { email }] })
+        if (isUserAlreadyExist) {
+            return res.status(400).json({ message: "account already exists with this email" })
+        }
+        const hash = await bcrypt.hash(password, 10);
+        const user = await userModal.create({ username, email, password: hash })
+        const token = jwt.sign({ id: user._id, username: user.username }, process.env.JWT_SECRET_KEY, { expiresIn: "1d" })
+        res.cookie("token", token, cookieOptions)
+        res.status(201).json({
+            message: "user registered successfully",
+            token,
+            user: { id: user._id, username: user.username, email: user.email }
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: "Something went wrong", error: error.message })
+    }
 }
 
-export async function loginUser(req,res) {
-    const {email, password} = req.body;
-    const user = await userModal.findOne({email});
-    if(!user){
-        return res.status(400).json({
-            message: "invalid email or password"
-        })
-    }
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if(!isPasswordValid){
-        return res.status(400).json({
-            message: "invalid email or password"
-        })
-    }
-    const token = jwt.sign({
-        id: user._id,
-        username: user.username
-    }, process.env.JWT_SECRET_KEY, { expiresIn: "1d" })
-
-    res.cookie("token", token, cookieOptions)  // ← fixed
-    res.status(201).json({
-        message: "user logged in successfully",
-        user: {
-            id: user._id,
-            username: user.username,
-            email: user.email
+export async function loginUser(req, res) {
+    try {
+        const { email, password } = req.body;
+        const user = await userModal.findOne({ email });
+        if (!user) {
+            return res.status(400).json({ message: "invalid email or password" })
         }
-    })
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(400).json({ message: "invalid email or password" })
+        }
+        const token = jwt.sign({ id: user._id, username: user.username }, process.env.JWT_SECRET_KEY, { expiresIn: "1d" })
+        res.cookie("token", token, cookieOptions)
+        res.status(201).json({
+            message: "user logged in successfully",
+            token,
+            user: { id: user._id, username: user.username, email: user.email }
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: "Something went wrong", error: error.message })
+    }
 }
 
-export async function logoutUser(req,res) {
-    const token = req.cookies.token;
-    if(token){
-        await tokenBlacklistModel.create({token})
+export async function logoutUser(req, res) {
+    try {
+        const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
+        if (token) {
+            await tokenBlacklistModel.create({ token })
+        }
+        res.clearCookie("token", cookieOptions)
+        res.status(200).json({ message: "user logged out successfully" })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: "Something went wrong", error: error.message })
     }
-    res.clearCookie("token", cookieOptions)  // ← fixed
-    res.status(200).json({
-        message: "user logged out successfully"
-    })
 }
 
-export async function getCurrentUser(req,res) {
-    const user = await userModal.findById(req.user.id)
-    res.status(200).json({
-        message: "user detail fetched successfully",
-        user: {
-            id: user._id,
-            username: user.username,
-            email: user.email
-        }
-    })
+export async function getCurrentUser(req, res) {
+    try {
+        const user = await userModal.findById(req.user.id)
+        res.status(200).json({
+            message: "user detail fetched successfully",
+            user: { id: user._id, username: user.username, email: user.email }
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: "Something went wrong", error: error.message })
+    }
 }
