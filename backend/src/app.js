@@ -19,11 +19,8 @@ const corsOptions = {
 }
 
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));  // preflight fix
-
 app.use(express.json());
 app.use(cookieParser());
-
 app.use("/api/auth", authRouter);
 app.use("/api/interview", interviewRouter);
 
